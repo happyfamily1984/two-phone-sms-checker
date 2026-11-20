@@ -28,11 +28,14 @@ import android.widget.Toast
 import java.util.UUID
 
 class MainActivity : Activity() {
-    private enum class Screen { CHOOSER, CODE, SENDER, RECEIVER, APPS }
+    private enum class Screen { CHOOSER, CODE, SENDER, RECEIVER, APPS, COMPOSE }
 
     private lateinit var prefs: Prefs
     private var screen = Screen.CHOOSER
     private var pendingRole = ROLE_NONE
+
+    /** 문자 보내기 화면에서 고른, 실제로 문자를 발신할 폰 */
+    private var composeDevId = ""
 
     // 받은 알림 목록
     private var msgs: List<Msg> = emptyList()
@@ -75,6 +78,9 @@ class MainActivity : Activity() {
         }
         v<Button>(R.id.btnAppInfo).setOnClickListener { openAppInfo() }
         v<Button>(R.id.btnBatteryS).setOnClickListener { askBattery() }
+        v<Switch>(R.id.swSms).setOnCheckedChangeListener { _, on ->
+            if (prefs.smsSendEnabled != on) setSmsSend(on)
+        }
         v<Button>(R.id.btnApps).setOnClickListener { show(Screen.APPS) }
         v<Button>(R.id.btnName).setOnClickListener { editName() }
         v<Button>(R.id.btnTest).setOnClickListener { sendTest() }
@@ -84,6 +90,17 @@ class MainActivity : Activity() {
         // 받는 폰
         v<Button>(R.id.btnPermR).setOnClickListener { fixReceiverPermission() }
         v<Button>(R.id.btnMenuR).setOnClickListener { receiverMenu() }
+        v<Button>(R.id.btnCompose).setOnClickListener { openCompose("", "") }
+        v<Button>(R.id.btnPickDevice).setOnClickListener { pickDevice() }
+        v<Button>(R.id.btnSendSms).setOnClickListener { sendSms() }
+        v<EditText>(R.id.etBody).addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, c: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                v<TextView>(R.id.tvCount).text = "${s?.length ?: 0}자"
+            }
+        })
+        v<TextView>(R.id.tvCount).text = "0자"
         v<Button>(R.id.btnSelCancel).setOnClickListener { endSelection() }
         v<Button>(R.id.btnSelDelete).setOnClickListener {
             val ids = selected.toSet()
@@ -120,6 +137,7 @@ class MainActivity : Activity() {
 
         show(home())
         if (prefs.role == ROLE_RECEIVER) enterReceiver()
+        if (prefs.role == ROLE_SENDER) ReceiverService.startIfNeeded(this)
     }
 
     private fun home() = when (prefs.role) {
@@ -134,12 +152,13 @@ class MainActivity : Activity() {
         val ids = mapOf(
             Screen.CHOOSER to R.id.screenChooser, Screen.CODE to R.id.screenCode,
             Screen.SENDER to R.id.screenSender, Screen.RECEIVER to R.id.screenReceiver,
-            Screen.APPS to R.id.screenApps,
+            Screen.APPS to R.id.screenApps, Screen.COMPOSE to R.id.screenCompose,
         )
         for ((k, id) in ids) v<View>(id).visibility = if (k == s) View.VISIBLE else View.GONE
         v<TextView>(R.id.tvBar).text = when (s) {
             Screen.CODE -> if (pendingRole == ROLE_SENDER) "보내는 폰 연결" else "받는 폰 연결"
             Screen.APPS -> "전달할 앱 선택"
+            Screen.COMPOSE -> "문자 보내기"
             else -> getString(R.string.app_name)
         }
         if (s == Screen.APPS) loadApps()
@@ -172,6 +191,7 @@ class MainActivity : Activity() {
         when (screen) {
             Screen.SENDER -> refreshSender()
             Screen.RECEIVER -> refreshReceiver()
+            Screen.COMPOSE -> refreshCompose()
             else -> {}
         }
     }
@@ -212,6 +232,19 @@ class MainActivity : Activity() {
             if (battery) "✓ 배터리 사용 제한이 풀려 있습니다"
             else "화면이 꺼져 있을 때도 바로 보내려면 배터리 사용 제한을 풀어 주세요."
         v<View>(R.id.btnBatteryS).visibility = if (battery) View.GONE else View.VISIBLE
+
+        val smsOn = prefs.smsSendEnabled
+        v<Switch>(R.id.swSms).isChecked = smsOn
+        v<TextView>(R.id.tvSmsState).apply {
+            visibility = if (smsOn) View.VISIBLE else View.GONE
+            val granted = smsGranted()
+            text = when {
+                !granted -> "⚠ 문자 발신 권한이 없습니다. 스위치를 껐다 켜서 권한을 허용해 주세요."
+                ReceiverService.connected -> "✓ ${ReceiverService.statusText}"
+                else -> "⚠ ${ReceiverService.statusText}"
+            }
+            setTextColor(getColor(if (granted && ReceiverService.connected) R.color.ok else R.color.warn))
+        }
 
         v<Button>(R.id.btnApps).text =
             if (prefs.forwardAll) "전달할 앱 선택 (모든 앱)" else "전달할 앱 선택 (${prefs.apps.size}개)"
@@ -258,6 +291,26 @@ class MainActivity : Activity() {
                 toast(if (error == null) "보냈습니다. 받는 폰을 확인하세요." else "전송 실패: $error")
             }
         }
+    }
+
+    private fun smsGranted() =
+        checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
+
+    private fun setSmsSend(on: Boolean) {
+        if (!on) {
+            prefs.smsSendEnabled = false
+            ReceiverService.stop(this)
+            refresh()
+            return
+        }
+        if (!smsGranted()) {
+            // 결과는 onRequestPermissionsResult에서 이어서 처리한다
+            requestPermissions(arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.POST_NOTIFICATIONS), 2)
+            return
+        }
+        prefs.smsSendEnabled = true
+        ReceiverService.startIfNeeded(this)
+        refresh()
     }
 
     private fun editName() {
@@ -328,6 +381,69 @@ class MainActivity : Activity() {
         }.show()
     }
 
+    // ───────── 문자 보내기 (받는 폰) ─────────
+
+    private fun openCompose(devId: String, number: String) {
+        val devices = prefs.devices
+        if (devices.isEmpty()) {
+            AlertDialog.Builder(this)
+                .setMessage("아직 연결된 보내는 폰을 찾지 못했습니다.\n\n보내는 폰에서 ‘테스트 알림 보내기’를 한 번 눌러 주세요. 알림이 도착하면 그 폰으로 문자를 보낼 수 있습니다.")
+                .setPositiveButton("확인", null).show()
+            return
+        }
+        if (devId in devices) composeDevId = devId
+        if (composeDevId !in devices) composeDevId = devices.keys.first()
+        if (number.isNotEmpty()) v<EditText>(R.id.etTo).setText(number)
+        endSelection()
+        show(Screen.COMPOSE)
+    }
+
+    private fun refreshCompose() {
+        val devices = prefs.devices
+        val name = devices[composeDevId] ?: "폰 선택"
+        v<Button>(R.id.btnPickDevice).text = if (devices.size > 1) "$name  (눌러서 변경)" else name
+    }
+
+    private fun pickDevice() {
+        val devices = prefs.devices.toList()
+        if (devices.size <= 1) return
+        AlertDialog.Builder(this).setTitle("문자를 발신할 폰")
+            .setItems(devices.map { it.second }.toTypedArray()) { _, i ->
+                composeDevId = devices[i].first
+                refresh()
+            }.show()
+    }
+
+    private fun sendSms() {
+        val to = SmsSender.cleanNumber(v<EditText>(R.id.etTo).text.toString())
+        val body = v<EditText>(R.id.etBody).text.toString().trim()
+        val devName = prefs.devices[composeDevId]
+        when {
+            devName == null -> { toast("문자를 발신할 폰을 골라 주세요"); return }
+            to == null -> { toast("받는 사람 번호를 정확히 입력해 주세요"); return }
+            body.isEmpty() -> { toast("내용을 입력해 주세요"); return }
+        }
+        AlertDialog.Builder(this)
+            .setTitle("문자를 보낼까요?")
+            .setMessage("발신: $devName\n받는 사람: $to\n\n$body")
+            .setPositiveButton("보내기") { _, _ ->
+                val btn = v<Button>(R.id.btnSendSms)
+                btn.isEnabled = false
+                ForwardListenerService.sendJson(this, true, SmsSender.buildCommand(composeDevId, to!!, body)) { error ->
+                    runOnUiThread {
+                        btn.isEnabled = true
+                        if (error == null) {
+                            v<EditText>(R.id.etBody).setText("")
+                            toast("$devName(으)로 요청을 보냈습니다. 결과는 알림으로 옵니다.")
+                            if (screen == Screen.COMPOSE) show(Screen.RECEIVER)
+                        } else toast("요청 전송 실패: $error")
+                    }
+                }
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
     private fun showMessage(m: Msg) {
         val head = listOf(m.dev, m.app).filter { it.isNotEmpty() }.joinToString(" · ")
         AlertDialog.Builder(this)
@@ -335,6 +451,10 @@ class MainActivity : Activity() {
             .setMessage("$head\n${DateUtils.formatDateTime(this, m.ts, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME)}\n\n${m.text}")
             .setPositiveButton("닫기", null)
             .setNeutralButton("내용 복사") { _, _ -> copy(m.text); toast("복사했습니다") }
+            .setNegativeButton("문자 보내기") { _, _ ->
+                // 알림 제목이 전화번호라면 받는 사람 칸에 미리 넣어 준다
+                openCompose(m.devId, SmsSender.cleanNumber(m.title).orEmpty())
+            }
             .show()
     }
 
@@ -380,7 +500,6 @@ class MainActivity : Activity() {
     }
 
     private fun restartReceiver() {
-        if (prefs.role != ROLE_RECEIVER) return
         ReceiverService.stop(this)
         v<View>(R.id.tvBar).postDelayed({ ReceiverService.startIfNeeded(this) }, 500)
     }
@@ -429,6 +548,7 @@ class MainActivity : Activity() {
             selecting -> endSelection()                    // 선택 모드 취소
             screen == Screen.APPS -> show(Screen.SENDER)   // 이전 화면 (저장됨)
             screen == Screen.CODE -> show(Screen.CHOOSER)
+            screen == Screen.COMPOSE -> show(Screen.RECEIVER) // 쓰던 내용은 그대로 남는다
             else -> AlertDialog.Builder(this)              // 홈
                 .setMessage("앱을 종료하겠습니까?")
                 .setPositiveButton("예") { _, _ -> finish() }
@@ -445,7 +565,7 @@ class MainActivity : Activity() {
         History.onChange = update
         ReceiverService.onStateChange = update
         ForwardListenerService.onStatusChange = update
-        if (prefs.role == ROLE_RECEIVER) ReceiverService.startIfNeeded(this)
+        ReceiverService.startIfNeeded(this)
         refresh()
     }
 
@@ -457,6 +577,17 @@ class MainActivity : Activity() {
     }
 
     override fun onRequestPermissionsResult(code: Int, permissions: Array<String>, results: IntArray) {
+        if (code == 2) {
+            if (smsGranted()) {
+                prefs.smsSendEnabled = true
+                ReceiverService.startIfNeeded(this)
+            } else {
+                AlertDialog.Builder(this)
+                    .setMessage("문자 발신 권한이 허용되지 않았습니다.\n\n권한 창이 뜨지 않았다면 ‘앱 정보 열기’ → 오른쪽 위 ⋮ → ‘제한된 설정 허용’을 누른 뒤, 권한 → SMS를 허용해 주세요.")
+                    .setPositiveButton("앱 정보 열기") { _, _ -> openAppInfo() }
+                    .setNegativeButton("닫기", null).show()
+            }
+        }
         refresh()
     }
 

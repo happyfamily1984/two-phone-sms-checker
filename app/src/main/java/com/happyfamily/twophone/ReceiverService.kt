@@ -15,8 +15,9 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 
 /**
- * 업무폰에서 동작. 중계 서버에 계속 연결해 두고,
- * 본래폰이 보낸 알림이 오면 복호화해서 이 폰에 알림으로 띄운다.
+ * 중계 서버에 계속 연결해 두는 서비스.
+ * - 받는 폰: 다른 폰이 보낸 알림이 오면 복호화해서 이 폰에 알림으로 띄운다.
+ * - 보내는 폰(문자 발신 허용 시): 받는 폰의 문자 발신 요청을 기다렸다가 문자를 보낸다.
  */
 class ReceiverService : Service() {
     private var worker: Thread? = null
@@ -39,7 +40,7 @@ class ReceiverService : Service() {
         } else {
             startForeground(STATUS_ID, status)
         }
-        if (prefs.role != ROLE_RECEIVER || !prefs.paired) {
+        if (!shouldRun(prefs)) {
             stopSelf()
             return START_NOT_STICKY
         }
@@ -59,14 +60,15 @@ class ReceiverService : Service() {
             try {
                 val key = prefs.key ?: break
                 val since = prefs.lastMsgId.ifEmpty { prefs.pairedAtSec.toString() }
-                Relay.subscribe(prefs.server, prefs.topic, since,
+                val sender = prefs.role == ROLE_SENDER
+                Relay.subscribe(prefs.server, if (sender) prefs.cmdTopic else prefs.topic, since,
                     onOpen = {
                         conn = it
                         backoff = 2000L
-                        setState(true, "본래폰 알림을 기다리는 중")
+                        setState(true, if (sender) "문자 발신 요청을 기다리는 중" else "다른 폰의 알림을 기다리는 중")
                     },
                     onMessage = { id, body ->
-                        handle(key, id, body)
+                        if (sender) SmsSender.handle(this, key, body) else handle(key, id, body)
                         if (id.isNotEmpty()) prefs.lastMsgId = id
                     })
             } catch (e: Exception) {
@@ -82,6 +84,10 @@ class ReceiverService : Service() {
         val plain = Crypto.decrypt(key, body) ?: return // 우리 코드로 보낸 것이 아니면 무시
         val msg = try { Msg.fromJson(JSONObject(plain), id) } catch (e: Exception) { return }
         if (!History.add(this, msg)) return
+        if (msg.devId.isNotEmpty()) {
+            val prefs = Prefs(this)
+            if (prefs.devices[msg.devId] != msg.dev) prefs.devices = prefs.devices + (msg.devId to msg.dev)
+        }
         val title = listOf(msg.dev.let { if (it.isEmpty()) "" else "[$it]" }, listOf(msg.app, msg.title)
             .filter { it.isNotEmpty() }.joinToString(" · ")).filter { it.isNotEmpty() }.joinToString(" ")
         val n = Notification.Builder(this, CH_MESSAGES)
@@ -156,9 +162,12 @@ class ReceiverService : Service() {
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
 
+        private fun shouldRun(prefs: Prefs) = prefs.paired &&
+            (prefs.role == ROLE_RECEIVER || (prefs.role == ROLE_SENDER && prefs.smsSendEnabled))
+
         fun startIfNeeded(ctx: Context) {
             val prefs = Prefs(ctx)
-            if (prefs.role == ROLE_RECEIVER && prefs.paired) {
+            if (shouldRun(prefs)) {
                 try {
                     ctx.startForegroundService(Intent(ctx, ReceiverService::class.java))
                 } catch (_: Exception) {

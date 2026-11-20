@@ -54,7 +54,7 @@ class ForwardListenerService : NotificationListenerService() {
         } catch (e: Exception) {
             pkg
         }
-        send(this, Msg(UUID.randomUUID().toString(), label, pkg, title.take(100), text.take(700), sbn.postTime, prefs.deviceName.take(30)))
+        send(this, Msg(UUID.randomUUID().toString(), label, pkg, title.take(100), text.take(700), sbn.postTime, prefs.deviceName.take(30), prefs.deviceId))
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
@@ -85,19 +85,24 @@ class ForwardListenerService : NotificationListenerService() {
         }
 
         /** 암호화해서 보낸다. 네트워크가 잠깐 안 될 때를 대비해 몇 번 다시 시도한다. */
-        fun send(ctx: Context, msg: Msg, onDone: ((error: String?) -> Unit)? = null) {
+        fun send(ctx: Context, msg: Msg, onDone: ((error: String?) -> Unit)? = null) =
+            sendJson(ctx, false, msg.toJson().toString(), onDone)
+
+        /** [command]가 true면 받는 폰 → 보내는 폰 방향의 요청 채널로 보낸다. */
+        fun sendJson(ctx: Context, command: Boolean, json: String, onDone: ((error: String?) -> Unit)? = null) {
             val app = ctx.applicationContext
             executor.execute {
                 val prefs = Prefs(app)
                 val key = prefs.key
                 var error: String? = "연결 코드가 없습니다"
                 if (key != null) {
-                    val body = Crypto.encrypt(key, msg.toJson().toString())
+                    val body = Crypto.encrypt(key, json)
+                    val topic = if (command) prefs.cmdTopic else prefs.topic
                     val waits = longArrayOf(0, 3000, 10000, 30000)
                     for (wait in waits) {
                         if (wait > 0) Thread.sleep(wait)
                         try {
-                            Relay.publish(prefs.server, prefs.topic, body)
+                            Relay.publish(prefs.server, topic, body)
                             error = null
                             break
                         } catch (e: Exception) {
@@ -106,7 +111,9 @@ class ForwardListenerService : NotificationListenerService() {
                         }
                     }
                 }
-                if (error == null) {
+                if (command) {
+                    // 요청 전송은 보낸 알림 통계에 넣지 않는다
+                } else if (error == null) {
                     prefs.sentCount += 1
                     prefs.lastSentAt = System.currentTimeMillis()
                     prefs.lastError = ""

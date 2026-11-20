@@ -20,6 +20,14 @@ class CryptoTest {
         assertArrayEquals(a.key, b.key)
         assertNotEquals(a.topic, c.topic)
         assertEquals(34, a.topic.length)
+        // 1.0에서 연결한 폰과 호환: 같은 코드는 예전과 같은 채널·키가 나와야 한다
+        val old = javax.crypto.SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(
+            javax.crypto.spec.PBEKeySpec("ABCDEFGHJKLMNPQR".toCharArray(), "twophone-v1".toByteArray(), 20000, 384)
+        ).encoded
+        assertArrayEquals(old.copyOfRange(0, 32), a.key)
+        assertEquals("tp" + old.copyOfRange(32, 48).joinToString("") { "%02x".format(it) }, a.topic)
+        assertEquals(34, a.cmdTopic.length)
+        assertNotEquals(a.topic.drop(2), a.cmdTopic.drop(2))
         assertEquals(32, a.key.size)
     }
 

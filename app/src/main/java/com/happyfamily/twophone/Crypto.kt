@@ -20,7 +20,8 @@ object Crypto {
 
     private val random = SecureRandom()
 
-    class Pairing(val topic: String, val key: ByteArray)
+    /** topic: 알림이 오가는 채널, cmdTopic: 받는 폰이 보내는 폰에게 요청(문자 발신)을 보내는 채널 */
+    class Pairing(val topic: String, val key: ByteArray, val cmdTopic: String)
 
     fun newCode(): String =
         (1..CODE_LENGTH).map { ALPHABET[random.nextInt(ALPHABET.length)] }.joinToString("")
@@ -34,11 +35,12 @@ object Crypto {
     fun formatCode(code: String): String = code.chunked(4).joinToString("-")
 
     fun derive(code: String): Pairing {
-        val spec = PBEKeySpec(code.toCharArray(), "twophone-v1".toByteArray(), 20000, 384)
+        val spec = PBEKeySpec(code.toCharArray(), "twophone-v1".toByteArray(), 20000, 512)
         val bytes = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256").generateSecret(spec).encoded
         val key = bytes.copyOfRange(0, 32)
         val topic = "tp" + bytes.copyOfRange(32, 48).joinToString("") { "%02x".format(it) }
-        return Pairing(topic, key)
+        val cmdTopic = "tc" + bytes.copyOfRange(48, 64).joinToString("") { "%02x".format(it) }
+        return Pairing(topic, key, cmdTopic)
     }
 
     fun encrypt(key: ByteArray, plain: String): String {

@@ -97,6 +97,17 @@
                 </LinearLayout>
 
                 <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="문자 발신" />
+                    <TextView style="@style/Body"
+                        android:text="켜 두면 받는 폰에서 번호와 내용을 적어 이 폰의 번호로 문자를 보낼 수 있습니다. 요청을 기다리기 위해 상태 알림이 항상 표시됩니다." />
+                    <Switch android:id="@+id/swSms" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:minHeight="52dp"
+                        android:text="받는 폰에서 문자 발신 허용" android:textSize="16sp"
+                        android:textColor="@color/text" />
+                    <TextView android:id="@+id/tvSmsState" style="@style/Body" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Card">
                     <TextView style="@style/CardTitle" android:text="설정" />
                     <Button android:id="@+id/btnApps" style="@style/BtnLight" android:text="전달할 앱 선택" />
                     <Button android:id="@+id/btnName" style="@style/BtnLight" android:text="이 폰 이름" />
@@ -124,6 +135,8 @@
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
                     <Button android:id="@+id/btnPermR" style="@style/Btn" android:layout_width="0dp"
                         android:layout_weight="1" android:text="권한 설정" android:layout_marginEnd="8dp" />
+                    <Button android:id="@+id/btnCompose" style="@style/Btn" android:layout_width="0dp"
+                        android:layout_weight="1" android:text="문자 보내기" android:layout_marginEnd="8dp" />
                     <Button android:id="@+id/btnMenuR" style="@style/BtnLight" android:layout_width="0dp"
                         android:layout_weight="1" android:text="설정 메뉴" />
                 </LinearLayout>
@@ -146,6 +159,34 @@
                 android:textSize="16sp" android:textColor="@color/sub"
                 android:text="아직 받은 알림이 없습니다.\n\n보내는 폰에서 ‘테스트 알림 보내기’를 눌러 확인해 보세요." />
         </LinearLayout>
+
+        <!-- 6. 문자 보내기 (받는 폰에서 작성 → 보내는 폰이 발신) -->
+        <ScrollView android:id="@+id/screenCompose" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="어느 폰의 번호로 보낼까요?" />
+                    <Button android:id="@+id/btnPickDevice" style="@style/BtnLight" />
+                    <TextView style="@style/CardTitle" android:text="받는 사람 번호" android:layout_marginTop="16dp"
+                        android:labelFor="@+id/etTo" />
+                    <EditText android:id="@+id/etTo" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:minHeight="56dp" android:textSize="18sp"
+                        android:inputType="phone" android:hint="예: 010-1234-5678"
+                        android:importantForAutofill="no" />
+                    <TextView style="@style/CardTitle" android:text="내용" android:layout_marginTop="16dp"
+                        android:labelFor="@+id/etBody" />
+                    <EditText android:id="@+id/etBody" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:minLines="4" android:gravity="top"
+                        android:textSize="17sp" android:inputType="textMultiLine|textCapSentences"
+                        android:maxLength="500" android:importantForAutofill="no" />
+                    <TextView android:id="@+id/tvCount" style="@style/Body" />
+                    <Button android:id="@+id/btnSendSms" style="@style/Btn" android:text="보내기" />
+                </LinearLayout>
+                <TextView style="@style/Body" android:padding="4dp"
+                    android:text="문자는 선택한 폰에서 그 폰의 번호로 발신되고, 결과는 알림으로 돌아옵니다. 그 폰에서 ‘받는 폰에서 문자 발신 허용’이 켜져 있어야 합니다. 긴 문자(한글 약 70자 초과)는 통신사에 따라 전송되지 않을 수 있습니다." />
+            </LinearLayout>
+        </ScrollView>
 
         <!-- 5. 전달할 앱 고르기 -->
         <LinearLayout android:id="@+id/screenApps" android:layout_width="match_parent"
