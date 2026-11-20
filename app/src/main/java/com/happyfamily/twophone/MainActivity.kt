@@ -284,7 +284,7 @@ class MainActivity : Activity() {
         toast("테스트 알림을 보내는 중…")
         val msg = Msg(
             UUID.randomUUID().toString(), "테스트", packageName, "연결 확인",
-            "이 알림이 보이면 정상적으로 연결된 것입니다.", System.currentTimeMillis(), prefs.deviceName.take(30),
+            "이 알림이 보이면 정상적으로 연결된 것입니다.", System.currentTimeMillis(), prefs.deviceName.take(30), prefs.deviceId,
         )
         ForwardListenerService.send(this, msg) { error ->
             runOnUiThread {
