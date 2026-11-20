@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:fitsSystemWindows="true">
+
+    <TextView android:id="@+id/tvBar" android:layout_width="match_parent" android:layout_height="56dp"
+        android:background="@color/primary" android:gravity="center_vertical"
+        android:paddingHorizontal="18dp" android:text="@string/app_name"
+        android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"
+        android:accessibilityHeading="true" />
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+
+        <!-- 1. 이 폰의 역할 고르기 -->
+        <ScrollView android:id="@+id/screenChooser" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="이 폰은 어떤 폰인가요?" />
+                    <TextView style="@style/Body"
+                        android:text="같은 앱을 모든 폰에 설치한 뒤, 폰마다 역할을 하나씩 고릅니다. 보내는 폰과 받는 폰은 각각 여러 대여도 됩니다." />
+                </LinearLayout>
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="📤 알림을 보내는 폰" />
+                    <TextView style="@style/Body"
+                        android:text="이 폰에 문자·카톡 등이 도착하면 다른 폰으로 알려 줍니다." />
+                    <Button android:id="@+id/btnRoleSender" style="@style/Btn" android:text="보내는 폰으로 설정" />
+                </LinearLayout>
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="📥 알림을 받는 폰" />
+                    <TextView style="@style/Body"
+                        android:text="다른 폰(들)에 도착한 문자·카톡 등을 이 폰에서 알림으로 받고 모아 봅니다." />
+                    <Button android:id="@+id/btnRoleReceiver" style="@style/Btn" android:text="받는 폰으로 설정" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- 2. 연결 코드 만들기 / 입력 -->
+        <ScrollView android:id="@+id/screenCode" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="첫 번째로 설정하는 폰이라면" />
+                    <TextView style="@style/Body"
+                        android:text="새 연결 코드를 만듭니다. 만든 코드를 나머지 폰에 똑같이 입력하면 서로 연결됩니다." />
+                    <Button android:id="@+id/btnNewCode" style="@style/Btn" android:text="새 연결 코드 만들기" />
+                </LinearLayout>
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="다른 폰에서 이미 코드를 만들었다면" />
+                    <TextView style="@style/Body" android:text="그 폰 화면에 보이는 16자리 연결 코드를 입력하세요." />
+                    <EditText android:id="@+id/etCode" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:minHeight="56dp"
+                        android:hint="예: ABCD-EFGH-JKLM-NPQR" android:textSize="20sp"
+                        android:inputType="textCapCharacters|textNoSuggestions" android:maxLength="24"
+                        android:importantForAutofill="no" android:layout_marginTop="8dp" />
+                    <Button android:id="@+id/btnJoin" style="@style/Btn" android:text="이 코드로 연결" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- 3. 보내는 폰 홈 -->
+        <ScrollView android:id="@+id/screenSender" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:visibility="gone">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:padding="16dp">
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="📤 보내는 폰" />
+                    <TextView android:id="@+id/tvSenderState" style="@style/Body" android:textStyle="bold" />
+                    <Switch android:id="@+id/swForward" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:minHeight="52dp"
+                        android:text="알림 전달 켜기" android:textSize="16sp" android:textColor="@color/text" />
+                    <TextView android:id="@+id/tvStats" style="@style/Body" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="연결 코드" />
+                    <TextView android:id="@+id/tvCodeS" android:layout_width="match_parent"
+                        android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold"
+                        android:textColor="@color/primary" android:fontFamily="monospace"
+                        android:textIsSelectable="true" />
+                    <TextView style="@style/Body"
+                        android:text="다른 폰에도 이 코드를 입력하세요. 코드를 아는 폰만 내용을 볼 수 있으니 남에게 알려 주지 마세요." />
+                    <Button android:id="@+id/btnCopyS" style="@style/BtnLight" android:text="코드 복사" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="필수 권한" />
+                    <TextView android:id="@+id/tvAccess" style="@style/Body" />
+                    <Button android:id="@+id/btnAccess" style="@style/Btn" android:text="알림 접근 권한 켜기" />
+                    <TextView android:id="@+id/tvAccessHelp" style="@style/Body" android:layout_marginTop="8dp"
+                        android:text="‘제한된 설정’이라며 켜지지 않으면: 아래 ‘앱 정보 열기’ → 오른쪽 위 ⋮ → ‘제한된 설정 허용’을 누른 뒤 다시 시도하세요." />
+                    <Button android:id="@+id/btnAppInfo" style="@style/BtnLight" android:text="앱 정보 열기" />
+                    <TextView android:id="@+id/tvBatteryS" style="@style/Body" android:layout_marginTop="12dp" />
+                    <Button android:id="@+id/btnBatteryS" style="@style/Btn" android:text="배터리 사용 제한 풀기" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/Card">
+                    <TextView style="@style/CardTitle" android:text="설정" />
+                    <Button android:id="@+id/btnApps" style="@style/BtnLight" android:text="전달할 앱 선택" />
+                    <Button android:id="@+id/btnName" style="@style/BtnLight" android:text="이 폰 이름" />
+                    <Button android:id="@+id/btnTest" style="@style/Btn" android:text="테스트 알림 보내기" />
+                    <Button android:id="@+id/btnServerS" style="@style/BtnLight" android:text="중계 서버 변경 (고급)" />
+                    <Button android:id="@+id/btnResetS" style="@style/BtnLight" android:text="연결 해제 · 처음부터 다시"
+                        android:textColor="@color/warn" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- 4. 받는 폰 홈 -->
+        <LinearLayout android:id="@+id/screenReceiver" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
+            <LinearLayout android:id="@+id/recvHeader" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:orientation="vertical"
+                android:background="@color/card" android:padding="16dp">
+                <TextView android:id="@+id/tvConn" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold"
+                    android:accessibilityLiveRegion="polite" />
+                <TextView android:id="@+id/tvCodeR" style="@style/Body" android:fontFamily="monospace"
+                    android:textIsSelectable="true" android:layout_marginTop="4dp" />
+                <TextView android:id="@+id/tvPermR" style="@style/Body" android:textColor="@color/warn"
+                    android:layout_marginTop="4dp" />
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <Button android:id="@+id/btnPermR" style="@style/Btn" android:layout_width="0dp"
+                        android:layout_weight="1" android:text="권한 설정" android:layout_marginEnd="8dp" />
+                    <Button android:id="@+id/btnMenuR" style="@style/BtnLight" android:layout_width="0dp"
+                        android:layout_weight="1" android:text="설정 메뉴" />
+                </LinearLayout>
+            </LinearLayout>
+            <LinearLayout android:id="@+id/selBar" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:gravity="center_vertical"
+                android:background="@color/selected" android:paddingHorizontal="16dp" android:visibility="gone">
+                <TextView android:id="@+id/tvSel" android:layout_width="0dp" android:layout_weight="1"
+                    android:layout_height="wrap_content" android:textSize="16sp" android:textColor="@color/text" />
+                <Button android:id="@+id/btnSelDelete" style="@style/Btn" android:layout_width="wrap_content"
+                    android:layout_marginTop="0dp" android:backgroundTint="@color/warn" android:text="삭제" />
+                <Button android:id="@+id/btnSelCancel" style="@style/BtnLight" android:layout_width="wrap_content"
+                    android:layout_marginTop="0dp" android:layout_marginStart="8dp" android:text="취소" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
+            <ListView android:id="@+id/lvMsgs" android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:divider="@color/line" android:dividerHeight="1dp" />
+            <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:gravity="center" android:padding="32dp"
+                android:textSize="16sp" android:textColor="@color/sub"
+                android:text="아직 받은 알림이 없습니다.\n\n보내는 폰에서 ‘테스트 알림 보내기’를 눌러 확인해 보세요." />
+        </LinearLayout>
+
+        <!-- 5. 전달할 앱 고르기 -->
+        <LinearLayout android:id="@+id/screenApps" android:layout_width="match_parent"
+            android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
+            <Switch android:id="@+id/swAll" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:minHeight="60dp" android:paddingHorizontal="16dp" android:background="@color/card"
+                android:text="모든 앱의 알림 전달" android:textSize="16sp" android:textColor="@color/text" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
+            <TextView android:id="@+id/tvAppsHint" style="@style/Body" android:padding="16dp"
+                android:text="알림을 전달할 앱을 고르세요. 뒤로가기를 누르면 저장됩니다." />
+            <ListView android:id="@+id/lvApps" android:layout_width="match_parent" android:layout_height="0dp"
+                android:layout_weight="1" android:background="@color/card"
+                android:divider="@color/line" android:dividerHeight="1dp" />
+        </LinearLayout>
+    </FrameLayout>
+</LinearLayout>

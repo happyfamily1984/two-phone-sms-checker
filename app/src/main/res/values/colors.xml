@@ -1,0 +1,12 @@
+<resources>
+    <color name="primary">#3949AB</color>
+    <color name="primaryDark">#283593</color>
+    <color name="bg">#F3F4FA</color>
+    <color name="card">#FFFFFF</color>
+    <color name="text">#1B1C22</color>
+    <color name="sub">#5F6270</color>
+    <color name="ok">#1B7F3B</color>
+    <color name="warn">#B3261E</color>
+    <color name="selected">#DDE1F7</color>
+    <color name="line">#E1E3EC</color>
+</resources>
