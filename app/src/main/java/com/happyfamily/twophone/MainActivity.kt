@@ -151,6 +151,12 @@ class MainActivity : Activity() {
             la.isEnabled = !on
         }
 
+        if (!BuildConfig.SMS_SEND) {
+            // Play 버전: 문자 발신 기능 없음
+            v<View>(R.id.cardSms).visibility = View.GONE
+            v<View>(R.id.btnCompose).visibility = View.GONE
+        }
+
         show(home())
         if (prefs.role == ROLE_RECEIVER) enterReceiver()
     }
@@ -436,6 +442,7 @@ class MainActivity : Activity() {
         checkSelfPermission(Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED
 
     private fun setSmsSend(on: Boolean) {
+        if (!BuildConfig.SMS_SEND) return
         if (!on) {
             prefs.smsSendEnabled = false
             ReceiverService.stop(this)
@@ -556,6 +563,7 @@ class MainActivity : Activity() {
     }
 
     private fun openCompose(devId: String, number: String) {
+        if (!BuildConfig.SMS_SEND) return
         val devices = prefs.devices
         if (devices.isEmpty()) {
             AlertDialog.Builder(this)
@@ -630,9 +638,11 @@ class MainActivity : Activity() {
             .setMessage("$head\n${DateUtils.formatDateTime(this, m.ts, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_SHOW_TIME)}\n\n${m.text}")
             .setPositiveButton("닫기", null)
             .setNeutralButton("내용 복사") { _, _ -> copy(m.text); toast("복사했습니다") }
-            .setNegativeButton("문자 보내기") { _, _ ->
-                // 알림 제목이 전화번호라면 받는 사람 칸에 미리 넣어 준다
-                openCompose(m.devId, SmsSender.cleanNumber(m.title).orEmpty())
+            .apply {
+                if (BuildConfig.SMS_SEND) setNegativeButton("문자 보내기") { _, _ ->
+                    // 알림 제목이 전화번호라면 받는 사람 칸에 미리 넣어 준다
+                    openCompose(m.devId, SmsSender.cleanNumber(m.title).orEmpty())
+                }
             }
             .show()
     }

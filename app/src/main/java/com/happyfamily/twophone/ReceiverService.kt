@@ -165,7 +165,7 @@ class ReceiverService : Service() {
         )
 
         private fun shouldRun(prefs: Prefs) = prefs.paired &&
-            (prefs.role == ROLE_RECEIVER || (prefs.role == ROLE_SENDER && prefs.smsSendEnabled))
+            (prefs.role == ROLE_RECEIVER || (BuildConfig.SMS_SEND && prefs.role == ROLE_SENDER && prefs.smsSendEnabled))
 
         fun startIfNeeded(ctx: Context) {
             val prefs = Prefs(ctx)

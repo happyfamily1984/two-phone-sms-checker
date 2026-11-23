@@ -16,7 +16,7 @@
 5. 받는 폰: 알림 권한을 허용하고 배터리 사용 제한을 풉니다.
 6. 보내는 폰에서 **테스트 알림 보내기**로 확인합니다.
 
-## 문자 보내기 (받는 폰에서 작성 → 보내는 폰이 발신)
+## 문자 보내기 (개인용 버전만 — 받는 폰에서 작성 → 보내는 폰이 발신)
 
 1. 보내는 폰에서 **받는 폰에서 문자 발신 허용**을 켜고 문자 발신 권한을 허용합니다.
 2. 보내는 폰에서 **테스트 알림 보내기**를 한 번 누릅니다. (받는 폰이 그 폰을 알게 됩니다)
@@ -32,6 +32,11 @@
 - 무료 중계 서버는 하루 전송량 제한(약 250건)이 있습니다. 필요하면 앱의 "중계 서버 변경"에 직접 운영하는 ntfy 서버 주소를 넣을 수 있습니다.
 - 받는 폰은 실시간 수신을 위해 상태 알림을 항상 띄워 둡니다.
 
+## 두 가지 버전
+
+- **Play 버전** (`play`): 알림 전달만. 문자 권한 없음. Play 스토어 출시용.
+- **개인용 버전** (`personal`): 문자 발신 기능 포함. 직접 설치 — [APK 받기](https://github.com/happyfamily1984/two-phone-sms-checker/raw/ccr-05aa882d-8ypr9v/apk/twophone-sms-checker-personal.apk)
+
 ## Play 스토어 출시
 
 출시용 파일과 Play Console 입력 내용은 [`play-store/`](play-store/README.md) 폴더에 있습니다.
@@ -39,10 +44,10 @@
 ## 빌드
 
 ```
-./gradlew bundleRelease     # Play 스토어용 AAB (keystore.properties의 업로드 키로 서명)
-./gradlew assembleSideload  # 직접 설치용 APK (저장소의 공용 키로 서명)
+./gradlew bundlePlayRelease        # Play 스토어용 AAB (keystore.properties의 업로드 키로 서명)
+./gradlew assemblePersonalRelease  # 개인용 APK (저장소의 공용 키로 서명)
 ```
 
 - 직접 설치용 서명 키(`signing/app.keystore`)는 어디서 빌드해도 업데이트 설치가 되도록 저장소에 들어 있습니다.
-- Play 업로드 키는 저장소에 넣지 않습니다. `keystore.properties`가 없으면 `bundleRelease`도 공용 키로 서명되므로 Play에 올리면 안 됩니다.
-- GitHub Actions에서 푸시할 때마다 직접 설치용 APK가 빌드됩니다.
+- Play 업로드 키는 저장소에 넣지 않습니다. `keystore.properties`가 없으면 `bundlePlayRelease`도 공용 키로 서명되므로 Play에 올리면 안 됩니다.
+- GitHub Actions에서 푸시할 때마다 개인용 APK가 빌드됩니다.

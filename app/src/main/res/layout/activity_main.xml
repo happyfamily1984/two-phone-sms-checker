@@ -125,7 +125,7 @@
                         <ImageView style="@style/IconCircle" android:src="@drawable/ic_upload" />
                         <TextView style="@style/CardTitle" android:text="알림을 보내는 폰" />
                     </LinearLayout>
-                    <TextView style="@style/Body" android:text="이 폰에 문자·카톡 등이 도착하면 다른 폰으로 알려 줍니다. 다른 폰의 요청으로 이 폰 번호로 문자를 보낼 수도 있습니다." />
+                    <TextView style="@style/Body" android:text="@string/role_sender_desc" />
                     <Button android:id="@+id/btnRoleSender" style="@style/Btn" android:text="보내는 폰으로 설정" />
                 </LinearLayout>
 
@@ -181,7 +181,7 @@
                     <ImageView style="@style/InfoIcon" />
                     <TextView
                         style="@style/InfoText"
-                        android:text="연결 코드는 내용을 잠그는 열쇠입니다. 코드를 아는 폰만 알림을 보고 문자를 보낼 수 있으니 남에게 알려 주지 마세요." />
+                        android:text="@string/code_info" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
@@ -286,8 +286,8 @@
                     <Button android:id="@+id/btnCopyS" style="@style/BtnLight" android:text="코드 복사" />
                 </LinearLayout>
 
-                <!-- 문자 발신 -->
-                <LinearLayout style="@style/Card">
+                <!-- 문자 발신 (개인용만) -->
+                <LinearLayout android:id="@+id/cardSms" style="@style/Card">
                     <LinearLayout style="@style/CardHead">
                         <ImageView style="@style/IconCircle" android:src="@drawable/ic_send" />
                         <TextView style="@style/CardTitle" android:text="문자 발신" />

@@ -20,9 +20,11 @@ android {
         applicationId = "com.happyfamily.twophone"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.3"
+        versionCode = 5
+        versionName = "1.4"
     }
+
+    buildFeatures { buildConfig = true }
 
     signingConfigs {
         // 직접 설치(APK)용: 어디서 빌드해도 같은 서명이 되도록 저장소에 든 키
@@ -42,19 +44,32 @@ android {
         }
     }
 
+    // 두 가지 버전
+    // - play: Play 스토어용. 문자 발신 기능·SEND_SMS 권한 없음. 업로드 키로 서명.
+    // - personal: 나만 쓰는 직접 설치용. 문자 발신 기능 포함. 저장소의 공용 키로 서명.
+    flavorDimensions += "dist"
+    productFlavors {
+        create("play") {
+            dimension = "dist"
+            buildConfigField("boolean", "SMS_SEND", "false")
+            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("shared")
+        }
+        create("personal") {
+            dimension = "dist"
+            applicationIdSuffix = ".personal"
+            versionNameSuffix = "-personal"
+            buildConfigField("boolean", "SMS_SEND", "true")
+            signingConfig = signingConfigs.getByName("shared")
+        }
+    }
+
     buildTypes {
         debug { signingConfig = signingConfigs.getByName("shared") }
         release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"))
-            signingConfig = signingConfigs.findByName("upload") ?: signingConfigs.getByName("shared")
-        }
-        // 직접 설치용 APK (공용 키로 서명 → 기존 설치본 위에 업데이트 가능)
-        create("sideload") {
-            initWith(getByName("release"))
-            signingConfig = signingConfigs.getByName("shared")
-            matchingFallbacks += "release"
+            // 서명 키는 위 productFlavors에서 버전별로 정한다
         }
     }
 

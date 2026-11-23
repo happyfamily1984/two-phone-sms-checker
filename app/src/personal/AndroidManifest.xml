@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 개인용(직접 설치) 버전에만 들어가는 문자 발신 권한과 발신 결과 수신기 -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+
+    <application>
+        <receiver android:name=".SmsSentReceiver" android:exported="false" />
+    </application>
+</manifest>

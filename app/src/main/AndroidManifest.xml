@@ -10,9 +10,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-feature android:name="android.hardware.telephony" android:required="false" />
-
     <!-- 전달할 앱을 고르는 목록에 설치된 앱을 보여 주기 위해 필요 -->
     <queries>
         <intent>
@@ -61,8 +58,6 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="사용자의 다른 휴대폰에서 전달된 알림을 실시간으로 수신" />
         </service>
-
-        <receiver android:name=".SmsSentReceiver" android:exported="false" />
 
         <receiver
             android:name=".BootReceiver"

@@ -39,6 +39,7 @@ object SmsSender {
         val plain = Crypto.decrypt(key, body) ?: return // 연결 코드를 모르는 쪽이 보낸 것은 무시
         val o = try { JSONObject(plain) } catch (e: Exception) { return }
         if (o.optString("c") != "sms") return
+        if (!BuildConfig.SMS_SEND) return // Play 버전은 문자를 보내지 않는다
         if (o.optString("target") != prefs.deviceId) return // 다른 폰에게 온 요청
         val id = o.optString("i")
         val to = cleanNumber(o.optString("to"))

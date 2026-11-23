@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">투폰문자체커 개인용</string>
+    <string name="role_sender_desc">이 폰에 문자·카톡 등이 도착하면 다른 폰으로 알려 줍니다. 다른 폰의 요청으로 이 폰 번호로 문자를 보낼 수도 있습니다.</string>
+    <string name="code_info">연결 코드는 내용을 잠그는 열쇠입니다. 코드를 아는 폰만 알림을 보고 문자를 보낼 수 있으니 남에게 알려 주지 마세요.</string>
+</resources>
