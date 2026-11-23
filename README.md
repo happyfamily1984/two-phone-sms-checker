@@ -32,11 +32,17 @@
 - 무료 중계 서버는 하루 전송량 제한(약 250건)이 있습니다. 필요하면 앱의 "중계 서버 변경"에 직접 운영하는 ntfy 서버 주소를 넣을 수 있습니다.
 - 받는 폰은 실시간 수신을 위해 상태 알림을 항상 띄워 둡니다.
 
+## Play 스토어 출시
+
+출시용 파일과 Play Console 입력 내용은 [`play-store/`](play-store/README.md) 폴더에 있습니다.
+
 ## 빌드
 
 ```
-./gradlew assembleRelease
+./gradlew bundleRelease     # Play 스토어용 AAB (keystore.properties의 업로드 키로 서명)
+./gradlew assembleSideload  # 직접 설치용 APK (저장소의 공용 키로 서명)
 ```
 
-`app/build/outputs/apk/release/app-release.apk`가 만들어집니다. GitHub Actions에서도 푸시할 때마다 APK가 빌드됩니다.
-서명 키(`signing/app.keystore`)는 어디서 빌드해도 업데이트 설치가 되도록 저장소에 들어 있는 개인용 키입니다.
+- 직접 설치용 서명 키(`signing/app.keystore`)는 어디서 빌드해도 업데이트 설치가 되도록 저장소에 들어 있습니다.
+- Play 업로드 키는 저장소에 넣지 않습니다. `keystore.properties`가 없으면 `bundleRelease`도 공용 키로 서명되므로 Play에 올리면 안 됩니다.
+- GitHub Actions에서 푸시할 때마다 직접 설치용 APK가 빌드됩니다.

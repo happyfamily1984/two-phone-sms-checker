@@ -1,12 +1,25 @@
 <resources>
-    <color name="primary">#3949AB</color>
-    <color name="primaryDark">#283593</color>
-    <color name="bg">#F3F4FA</color>
+    <color name="primary">#4F46E5</color>
+    <color name="primary2">#7C5CF5</color>
+    <color name="headerStart">#4A55EE</color>
+    <color name="headerEnd">#9B7BF8</color>
+    <color name="bg">#F5F4FC</color>
     <color name="card">#FFFFFF</color>
-    <color name="text">#1B1C22</color>
-    <color name="sub">#5F6270</color>
-    <color name="ok">#1B7F3B</color>
-    <color name="warn">#B3261E</color>
-    <color name="selected">#DDE1F7</color>
-    <color name="line">#E1E3EC</color>
+    <color name="text">#1E1B3A</color>
+    <color name="sub">#6B6890</color>
+    <color name="hint">#A19DC0</color>
+    <color name="ok">#16A34A</color>
+    <color name="okCircle">#22C55E</color>
+    <color name="warn">#DC2626</color>
+    <color name="warnSoft">#FDECEC</color>
+    <color name="tint">#EEECFD</color>
+    <color name="pill">#E9E7FC</color>
+    <color name="line">#E8E6F5</color>
+    <color name="fieldBorder">#DCD8FA</color>
+    <color name="fieldFill">#F8F7FF</color>
+    <color name="selected">#E3E0FD</color>
+    <color name="chevron">#A7A3C9</color>
+    <color name="shadow">#604F46E5</color>
+    <color name="white">#FFFFFF</color>
+    <color name="ripple">#264F46E5</color>
 </resources>

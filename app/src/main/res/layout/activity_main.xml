@@ -1,205 +1,794 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:orientation="vertical" android:fitsSystemWindows="true">
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg"
+    android:orientation="vertical">
 
-    <TextView android:id="@+id/tvBar" android:layout_width="match_parent" android:layout_height="56dp"
-        android:background="@color/primary" android:gravity="center_vertical"
-        android:paddingHorizontal="18dp" android:text="@string/app_name"
-        android:textColor="#FFFFFF" android:textSize="20sp" android:textStyle="bold"
-        android:accessibilityHeading="true" />
+    <!-- ───────── 머리 (그라데이션) ───────── -->
+    <FrameLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/header_bg"
+        android:paddingBottom="52dp">
 
-    <FrameLayout android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <ImageView
+            android:id="@+id/ivHeaderArt"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_gravity="end|bottom"
+            android:layout_marginEnd="6dp"
+            android:layout_marginBottom="-30dp"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            android:src="@drawable/header_phones" />
 
-        <!-- 1. 이 폰의 역할 고르기 -->
-        <ScrollView android:id="@+id/screenChooser" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:visibility="gone">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical" android:padding="16dp">
+        <LinearLayout
+            android:id="@+id/headerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="18dp"
+            android:paddingEnd="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/btnBack"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="14dp"
+                    android:background="@drawable/circle_white"
+                    android:contentDescription="뒤로 가기"
+                    android:elevation="2dp"
+                    android:padding="12dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_back"
+                    android:tint="@color/primary"
+                    android:visibility="gone" />
+
+                <FrameLayout
+                    android:id="@+id/titleBadge"
+                    android:layout_width="42dp"
+                    android:layout_height="42dp"
+                    android:layout_marginEnd="12dp"
+                    android:background="@drawable/circle_white"
+                    android:importantForAccessibility="no">
+
+                    <ImageView
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_check"
+                        android:tint="@color/primary" />
+                </FrameLayout>
+
+                <TextView
+                    android:id="@+id/tvBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:accessibilityHeading="true"
+                    android:text="@string/app_name"
+                    android:textColor="@color/white"
+                    android:textSize="27sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvSub"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="110dp"
+                android:alpha="0.9"
+                android:lineSpacingExtra="2dp"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- ───────── 본문: 머리 위로 살짝 겹쳐 올라온다 ───────── -->
+    <FrameLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-34dp"
+        android:layout_weight="1">
+
+        <!-- 1. 역할 고르기 -->
+        <ScrollView
+            android:id="@+id/screenChooser"
+            style="@style/Screen"
+            android:visibility="gone">
+
+            <LinearLayout style="@style/ScreenBody">
+
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="이 폰은 어떤 폰인가요?" />
-                    <TextView style="@style/Body"
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_phone" />
+                        <TextView style="@style/CardTitle" android:text="이 폰은 어떤 폰인가요?" />
+                    </LinearLayout>
+                    <TextView
+                        style="@style/Body"
                         android:text="같은 앱을 모든 폰에 설치한 뒤, 폰마다 역할을 하나씩 고릅니다. 보내는 폰과 받는 폰은 각각 여러 대여도 됩니다." />
                 </LinearLayout>
+
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="📤 알림을 보내는 폰" />
-                    <TextView style="@style/Body"
-                        android:text="이 폰에 문자·카톡 등이 도착하면 다른 폰으로 알려 줍니다." />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_upload" />
+                        <TextView style="@style/CardTitle" android:text="알림을 보내는 폰" />
+                    </LinearLayout>
+                    <TextView style="@style/Body" android:text="이 폰에 문자·카톡 등이 도착하면 다른 폰으로 알려 줍니다. 다른 폰의 요청으로 이 폰 번호로 문자를 보낼 수도 있습니다." />
                     <Button android:id="@+id/btnRoleSender" style="@style/Btn" android:text="보내는 폰으로 설정" />
                 </LinearLayout>
+
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="📥 알림을 받는 폰" />
-                    <TextView style="@style/Body"
-                        android:text="다른 폰(들)에 도착한 문자·카톡 등을 이 폰에서 알림으로 받고 모아 봅니다." />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_download" />
+                        <TextView style="@style/CardTitle" android:text="알림을 받는 폰" />
+                    </LinearLayout>
+                    <TextView style="@style/Body" android:text="다른 폰(들)에 도착한 문자·카톡 등을 이 폰에서 알림으로 받고 한곳에 모아 봅니다." />
                     <Button android:id="@+id/btnRoleReceiver" style="@style/Btn" android:text="받는 폰으로 설정" />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
 
         <!-- 2. 연결 코드 만들기 / 입력 -->
-        <ScrollView android:id="@+id/screenCode" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:visibility="gone">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical" android:padding="16dp">
+        <ScrollView
+            android:id="@+id/screenCode"
+            style="@style/Screen"
+            android:visibility="gone">
+
+            <LinearLayout style="@style/ScreenBody">
+
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="첫 번째로 설정하는 폰이라면" />
-                    <TextView style="@style/Body"
-                        android:text="새 연결 코드를 만듭니다. 만든 코드를 나머지 폰에 똑같이 입력하면 서로 연결됩니다." />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_key" />
+                        <TextView style="@style/CardTitle" android:text="첫 번째로 설정하는 폰이라면" />
+                    </LinearLayout>
+                    <TextView style="@style/Body" android:text="새 연결 코드를 만듭니다. 만든 코드를 나머지 폰에 똑같이 입력하면 서로 연결됩니다." />
                     <Button android:id="@+id/btnNewCode" style="@style/Btn" android:text="새 연결 코드 만들기" />
                 </LinearLayout>
+
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="다른 폰에서 이미 코드를 만들었다면" />
-                    <TextView style="@style/Body" android:text="그 폰 화면에 보이는 16자리 연결 코드를 입력하세요." />
-                    <EditText android:id="@+id/etCode" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:minHeight="56dp"
-                        android:hint="예: ABCD-EFGH-JKLM-NPQR" android:textSize="20sp"
-                        android:inputType="textCapCharacters|textNoSuggestions" android:maxLength="24"
-                        android:importantForAutofill="no" android:layout_marginTop="8dp" />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_edit" />
+                        <TextView style="@style/CardTitle" android:text="이미 코드를 만들었다면" />
+                    </LinearLayout>
+                    <TextView
+                        style="@style/Body"
+                        android:layout_marginBottom="12dp"
+                        android:labelFor="@+id/etCode"
+                        android:text="다른 폰 화면에 보이는 16자리 연결 코드를 입력하세요." />
+                    <EditText
+                        android:id="@+id/etCode"
+                        style="@style/Field"
+                        android:fontFamily="monospace"
+                        android:hint="ABCD-EFGH-JKLM-NPQR"
+                        android:inputType="textCapCharacters|textNoSuggestions"
+                        android:maxLength="24" />
                     <Button android:id="@+id/btnJoin" style="@style/Btn" android:text="이 코드로 연결" />
+                </LinearLayout>
+
+                <LinearLayout style="@style/InfoCard">
+                    <ImageView style="@style/InfoIcon" />
+                    <TextView
+                        style="@style/InfoText"
+                        android:text="연결 코드는 내용을 잠그는 열쇠입니다. 코드를 아는 폰만 알림을 보고 문자를 보낼 수 있으니 남에게 알려 주지 마세요." />
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
 
         <!-- 3. 보내는 폰 홈 -->
-        <ScrollView android:id="@+id/screenSender" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:visibility="gone">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical" android:padding="16dp">
+        <ScrollView
+            android:id="@+id/screenSender"
+            style="@style/Screen"
+            android:visibility="gone">
+
+            <LinearLayout style="@style/ScreenBody">
+
+                <!-- 상태 -->
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="📤 보내는 폰" />
-                    <TextView android:id="@+id/tvSenderState" style="@style/Body" android:textStyle="bold" />
-                    <Switch android:id="@+id/swForward" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:minHeight="52dp"
-                        android:text="알림 전달 켜기" android:textSize="16sp" android:textColor="@color/text" />
-                    <TextView android:id="@+id/tvStats" style="@style/Body" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:accessibilityLiveRegion="polite"
+                        android:gravity="center_vertical">
+                        <FrameLayout
+                            android:id="@+id/senderBadge"
+                            android:layout_width="52dp"
+                            android:layout_height="52dp"
+                            android:background="@drawable/circle_ok"
+                            android:importantForAccessibility="no">
+                            <ImageView
+                                android:id="@+id/ivSenderBadge"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_check"
+                                android:tint="@color/white" />
+                        </FrameLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView
+                                android:id="@+id/tvSenderState"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textSize="17sp"
+                                android:textStyle="bold" />
+                            <TextView
+                                android:id="@+id/tvStats"
+                                style="@style/Body"
+                                android:layout_marginTop="2dp"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <Switch
+                        android:id="@+id/swForward"
+                        style="@style/SwitchRow"
+                        android:layout_marginTop="12dp"
+                        android:text="알림 전달 켜기" />
+                    <Button android:id="@+id/btnTest" style="@style/Btn" android:text="테스트 알림 보내기" />
                 </LinearLayout>
 
-                <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="연결 코드" />
-                    <TextView android:id="@+id/tvCodeS" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:textSize="24sp" android:textStyle="bold"
-                        android:textColor="@color/primary" android:fontFamily="monospace"
-                        android:textIsSelectable="true" />
-                    <TextView style="@style/Body"
-                        android:text="다른 폰에도 이 코드를 입력하세요. 코드를 아는 폰만 내용을 볼 수 있으니 남에게 알려 주지 마세요." />
-                    <Button android:id="@+id/btnCopyS" style="@style/BtnLight" android:text="코드 복사" />
-                </LinearLayout>
-
-                <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="필수 권한" />
+                <!-- 필수 권한 -->
+                <LinearLayout android:id="@+id/cardPerms" style="@style/Card">
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_shield" />
+                        <TextView style="@style/CardTitle" android:text="필수 권한" />
+                    </LinearLayout>
                     <TextView android:id="@+id/tvAccess" style="@style/Body" />
                     <Button android:id="@+id/btnAccess" style="@style/Btn" android:text="알림 접근 권한 켜기" />
-                    <TextView android:id="@+id/tvAccessHelp" style="@style/Body" android:layout_marginTop="8dp"
-                        android:text="‘제한된 설정’이라며 켜지지 않으면: 아래 ‘앱 정보 열기’ → 오른쪽 위 ⋮ → ‘제한된 설정 허용’을 누른 뒤 다시 시도하세요." />
+                    <TextView
+                        android:id="@+id/tvAccessHelp"
+                        style="@style/Body"
+                        android:layout_marginTop="10dp"
+                        android:textSize="14sp"
+                        android:text="‘제한된 설정’이라며 켜지지 않으면: ‘앱 정보 열기’ → 오른쪽 위 ⋮ → ‘제한된 설정 허용’을 누른 뒤 다시 시도하세요." />
                     <Button android:id="@+id/btnAppInfo" style="@style/BtnLight" android:text="앱 정보 열기" />
-                    <TextView android:id="@+id/tvBatteryS" style="@style/Body" android:layout_marginTop="12dp" />
+                    <TextView android:id="@+id/tvBatteryS" style="@style/Body" android:layout_marginTop="14dp" />
                     <Button android:id="@+id/btnBatteryS" style="@style/Btn" android:text="배터리 사용 제한 풀기" />
                 </LinearLayout>
 
+                <!-- 연결 코드 -->
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="문자 발신" />
-                    <TextView style="@style/Body"
-                        android:text="켜 두면 받는 폰에서 번호와 내용을 적어 이 폰의 번호로 문자를 보낼 수 있습니다. 요청을 기다리기 위해 상태 알림이 항상 표시됩니다." />
-                    <Switch android:id="@+id/swSms" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:minHeight="52dp"
-                        android:text="받는 폰에서 문자 발신 허용" android:textSize="16sp"
-                        android:textColor="@color/text" />
-                    <TextView android:id="@+id/tvSmsState" style="@style/Body" />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_key" />
+                        <TextView style="@style/CardTitle" android:text="연결 코드" />
+                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvCodeS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/field"
+                        android:fontFamily="monospace"
+                        android:gravity="center"
+                        android:paddingVertical="14dp"
+                        android:textColor="@color/primary"
+                        android:textIsSelectable="true"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+                    <TextView
+                        style="@style/Body"
+                        android:layout_marginTop="10dp"
+                        android:text="다른 폰에도 이 코드를 입력하세요. 남에게 알려 주지 마세요." />
+                    <Button android:id="@+id/btnCopyS" style="@style/BtnLight" android:text="코드 복사" />
                 </LinearLayout>
 
+                <!-- 문자 발신 -->
                 <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="설정" />
-                    <Button android:id="@+id/btnApps" style="@style/BtnLight" android:text="전달할 앱 선택" />
-                    <Button android:id="@+id/btnName" style="@style/BtnLight" android:text="이 폰 이름" />
-                    <Button android:id="@+id/btnTest" style="@style/Btn" android:text="테스트 알림 보내기" />
-                    <Button android:id="@+id/btnServerS" style="@style/BtnLight" android:text="중계 서버 변경 (고급)" />
-                    <Button android:id="@+id/btnResetS" style="@style/BtnLight" android:text="연결 해제 · 처음부터 다시"
-                        android:textColor="@color/warn" />
+                    <LinearLayout style="@style/CardHead">
+                        <ImageView style="@style/IconCircle" android:src="@drawable/ic_send" />
+                        <TextView style="@style/CardTitle" android:text="문자 발신" />
+                    </LinearLayout>
+                    <TextView
+                        style="@style/Body"
+                        android:text="켜 두면 받는 폰에서 번호와 내용을 적어 이 폰의 번호로 문자를 보낼 수 있습니다. 요청을 기다리는 동안 상태 알림이 표시됩니다." />
+                    <Switch
+                        android:id="@+id/swSms"
+                        style="@style/SwitchRow"
+                        android:text="받는 폰에서 문자 발신 허용" />
+                    <TextView android:id="@+id/tvSmsState" style="@style/Body" android:textSize="14sp" />
+                </LinearLayout>
+
+                <!-- 설정 -->
+                <LinearLayout style="@style/Card" android:paddingVertical="10dp">
+                    <LinearLayout android:id="@+id/rowApps" style="@style/Row">
+                        <ImageView style="@style/RowIcon" android:src="@drawable/ic_apps" />
+                        <TextView android:id="@+id/tvRowApps" style="@style/RowText" android:text="전달할 앱 선택" />
+                        <ImageView style="@style/RowChevron" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/rowName" style="@style/Row">
+                        <ImageView style="@style/RowIcon" android:src="@drawable/ic_edit" />
+                        <TextView android:id="@+id/tvRowName" style="@style/RowText" android:text="이 폰 이름" />
+                        <ImageView style="@style/RowChevron" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/rowServerS" style="@style/Row">
+                        <ImageView style="@style/RowIcon" android:src="@drawable/ic_cloud" />
+                        <TextView style="@style/RowText" android:text="중계 서버 변경 (고급)" />
+                        <ImageView style="@style/RowChevron" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/rowPrivacyS" style="@style/Row">
+                        <ImageView style="@style/RowIcon" android:src="@drawable/ic_policy" />
+                        <TextView style="@style/RowText" android:text="개인정보처리방침" />
+                        <ImageView style="@style/RowChevron" />
+                    </LinearLayout>
+                    <LinearLayout android:id="@+id/rowResetS" style="@style/Row">
+                        <ImageView style="@style/RowIcon" android:src="@drawable/ic_link_off" android:tint="@color/warn" android:background="@drawable/icon_circle_warn" />
+                        <TextView style="@style/RowText" android:text="연결 해제 · 처음부터 다시" android:textColor="@color/warn" />
+                        <ImageView style="@style/RowChevron" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>
 
         <!-- 4. 받는 폰 홈 -->
-        <LinearLayout android:id="@+id/screenReceiver" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
-            <LinearLayout android:id="@+id/recvHeader" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:orientation="vertical"
-                android:background="@color/card" android:padding="16dp">
-                <TextView android:id="@+id/tvConn" android:layout_width="match_parent"
-                    android:layout_height="wrap_content" android:textSize="16sp" android:textStyle="bold"
-                    android:accessibilityLiveRegion="polite" />
-                <TextView android:id="@+id/tvCodeR" style="@style/Body" android:fontFamily="monospace"
-                    android:textIsSelectable="true" android:layout_marginTop="4dp" />
-                <TextView android:id="@+id/tvPermR" style="@style/Body" android:textColor="@color/warn"
-                    android:layout_marginTop="4dp" />
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
-                    <Button android:id="@+id/btnPermR" style="@style/Btn" android:layout_width="0dp"
-                        android:layout_weight="1" android:text="권한 설정" android:layout_marginEnd="8dp" />
-                    <Button android:id="@+id/btnCompose" style="@style/Btn" android:layout_width="0dp"
-                        android:layout_weight="1" android:text="문자 보내기" android:layout_marginEnd="8dp" />
-                    <Button android:id="@+id/btnMenuR" style="@style/BtnLight" android:layout_width="0dp"
-                        android:layout_weight="1" android:text="설정 메뉴" />
+        <LinearLayout
+            android:id="@+id/screenReceiver"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <!-- 연결 상태 -->
+            <LinearLayout
+                android:id="@+id/cardConn"
+                style="@style/Card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:accessibilityLiveRegion="polite"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="16dp">
+                <FrameLayout
+                    android:id="@+id/connBadge"
+                    android:layout_width="52dp"
+                    android:layout_height="52dp"
+                    android:background="@drawable/circle_ok"
+                    android:importantForAccessibility="no">
+                    <ImageView
+                        android:id="@+id/ivConnBadge"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_check"
+                        android:tint="@color/white" />
+                </FrameLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/tvConn"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text"
+                        android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvCodeR"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="3dp"
+                        android:textColor="@color/sub"
+                        android:textIsSelectable="true"
+                        android:textSize="15sp" />
+                </LinearLayout>
+                <ImageView
+                    android:id="@+id/ivWifi"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_marginStart="8dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_wifi"
+                    android:tint="#B3ACF5" />
+            </LinearLayout>
+
+            <!-- 문자 보내기 / 설정 메뉴 -->
+            <LinearLayout
+                android:id="@+id/segment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/pill_track"
+                android:orientation="horizontal">
+                <LinearLayout
+                    android:id="@+id/btnCompose"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_primary"
+                    android:clickable="true"
+                    android:elevation="3dp"
+                    android:focusable="true"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_mail"
+                        android:tint="@color/white" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="문자 보내기"
+                        android:textColor="@color/white"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/btnMenuR"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/btn_light"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center">
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_settings"
+                        android:tint="@color/primary" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:text="설정 메뉴"
+                        android:textColor="@color/primary"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
-            <LinearLayout android:id="@+id/selBar" android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:gravity="center_vertical"
-                android:background="@color/selected" android:paddingHorizontal="16dp" android:visibility="gone">
-                <TextView android:id="@+id/tvSel" android:layout_width="0dp" android:layout_weight="1"
-                    android:layout_height="wrap_content" android:textSize="16sp" android:textColor="@color/text" />
-                <Button android:id="@+id/btnSelDelete" style="@style/Btn" android:layout_width="wrap_content"
-                    android:layout_marginTop="0dp" android:backgroundTint="@color/warn" android:text="삭제" />
-                <Button android:id="@+id/btnSelCancel" style="@style/BtnLight" android:layout_width="wrap_content"
-                    android:layout_marginTop="0dp" android:layout_marginStart="8dp" android:text="취소" />
+
+            <!-- 권한 경고 -->
+            <LinearLayout
+                android:id="@+id/cardPermR"
+                style="@style/Card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/card_warn"
+                android:elevation="0dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="12dp"
+                android:visibility="gone">
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_warning"
+                    android:tint="@color/warn" />
+                <TextView
+                    android:id="@+id/tvPermR"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/warn"
+                    android:textSize="14sp" />
+                <Button
+                    android:id="@+id/btnPermR"
+                    style="@style/Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="0dp"
+                    android:minHeight="46dp"
+                    android:text="설정"
+                    android:textSize="15sp" />
             </LinearLayout>
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
-            <ListView android:id="@+id/lvMsgs" android:layout_width="match_parent" android:layout_height="0dp"
-                android:layout_weight="1" android:divider="@color/line" android:dividerHeight="1dp" />
-            <TextView android:id="@+id/tvEmpty" android:layout_width="match_parent" android:layout_height="0dp"
-                android:layout_weight="1" android:gravity="center" android:padding="32dp"
-                android:textSize="16sp" android:textColor="@color/sub"
-                android:text="아직 받은 알림이 없습니다.\n\n보내는 폰에서 ‘테스트 알림 보내기’를 눌러 확인해 보세요." />
+
+            <!-- 선택 모드 -->
+            <LinearLayout
+                android:id="@+id/selBar"
+                style="@style/Card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:background="@drawable/card_selected"
+                android:elevation="0dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingVertical="10dp"
+                android:visibility="gone">
+                <TextView
+                    android:id="@+id/tvSel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:accessibilityLiveRegion="polite"
+                    android:textColor="@color/text"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+                <Button
+                    android:id="@+id/btnSelCancel"
+                    style="@style/BtnLight"
+                    android:layout_width="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:background="@drawable/btn_white"
+                    android:minHeight="46dp"
+                    android:text="취소"
+                    android:textSize="15sp" />
+                <Button
+                    android:id="@+id/btnSelDelete"
+                    style="@style/Btn"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="0dp"
+                    android:background="@drawable/btn_danger"
+                    android:minHeight="46dp"
+                    android:text="삭제"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/lvMsgs"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:clipToPadding="false"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:listSelector="@android:color/transparent"
+                android:paddingTop="4dp"
+                android:paddingBottom="16dp"
+                android:scrollbarStyle="outsideOverlay" />
+
+            <LinearLayout
+                android:id="@+id/tvEmpty"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp">
+                <ImageView
+                    android:layout_width="84dp"
+                    android:layout_height="84dp"
+                    android:background="@drawable/icon_circle"
+                    android:importantForAccessibility="no"
+                    android:padding="22dp"
+                    android:src="@drawable/ic_chat"
+                    android:tint="@color/primary" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="아직 받은 알림이 없습니다"
+                    android:textColor="@color/text"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"
+                    android:text="보내는 폰에서 ‘테스트 알림 보내기’를 눌러 연결을 확인해 보세요."
+                    android:textColor="@color/sub"
+                    android:textSize="15sp" />
+            </LinearLayout>
         </LinearLayout>
 
-        <!-- 6. 문자 보내기 (받는 폰에서 작성 → 보내는 폰이 발신) -->
-        <ScrollView android:id="@+id/screenCompose" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:visibility="gone">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:orientation="vertical" android:padding="16dp">
-                <LinearLayout style="@style/Card">
-                    <TextView style="@style/CardTitle" android:text="어느 폰의 번호로 보낼까요?" />
-                    <Button android:id="@+id/btnPickDevice" style="@style/BtnLight" />
-                    <TextView style="@style/CardTitle" android:text="받는 사람 번호" android:layout_marginTop="16dp"
-                        android:labelFor="@+id/etTo" />
-                    <EditText android:id="@+id/etTo" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:minHeight="56dp" android:textSize="18sp"
-                        android:inputType="phone" android:hint="예: 010-1234-5678"
-                        android:importantForAutofill="no" />
-                    <TextView style="@style/CardTitle" android:text="내용" android:layout_marginTop="16dp"
-                        android:labelFor="@+id/etBody" />
-                    <EditText android:id="@+id/etBody" android:layout_width="match_parent"
-                        android:layout_height="wrap_content" android:minLines="4" android:gravity="top"
-                        android:textSize="17sp" android:inputType="textMultiLine|textCapSentences"
-                        android:maxLength="500" android:importantForAutofill="no" />
-                    <TextView android:id="@+id/tvCount" style="@style/Body" />
-                    <Button android:id="@+id/btnSendSms" style="@style/Btn" android:text="보내기" />
+        <!-- 5. 문자 보내기 (받는 폰에서 작성 → 보내는 폰이 발신) -->
+        <ScrollView
+            android:id="@+id/screenCompose"
+            style="@style/Screen"
+            android:visibility="gone">
+
+            <LinearLayout style="@style/ScreenBody">
+
+                <LinearLayout style="@style/Card" android:paddingVertical="22dp">
+
+                    <!-- 발신할 폰 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <ImageView style="@style/IconCircle" android:layout_width="52dp" android:layout_height="52dp" android:src="@drawable/ic_phone" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView style="@style/Label" android:text="어느 폰의 번호로 보낼까요?" />
+                            <LinearLayout
+                                android:id="@+id/btnPickDevice"
+                                android:layout_width="match_parent"
+                                android:layout_height="56dp"
+                                android:background="@drawable/btn_light"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:gravity="center_vertical"
+                                android:paddingHorizontal="18dp">
+                                <TextView
+                                    android:id="@+id/tvPickDevice"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:ellipsize="end"
+                                    android:gravity="center"
+                                    android:maxLines="1"
+                                    android:textColor="@color/primary"
+                                    android:textSize="19sp"
+                                    android:textStyle="bold" />
+                                <ImageView
+                                    android:id="@+id/ivPickChevron"
+                                    android:layout_width="26dp"
+                                    android:layout_height="26dp"
+                                    android:importantForAccessibility="no"
+                                    android:src="@drawable/ic_expand"
+                                    android:tint="@color/primary" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- 받는 사람 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="horizontal">
+                        <ImageView style="@style/IconCircle" android:layout_width="52dp" android:layout_height="52dp" android:src="@drawable/ic_people" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView style="@style/Label" android:labelFor="@+id/etTo" android:text="받는 사람 번호" />
+                            <FrameLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <EditText
+                                    android:id="@+id/etTo"
+                                    style="@style/Field"
+                                    android:hint="예: 010-1234-5678"
+                                    android:inputType="phone"
+                                    android:paddingEnd="52dp" />
+                                <ImageButton
+                                    android:id="@+id/btnClearTo"
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:layout_gravity="end|center_vertical"
+                                    android:layout_marginEnd="4dp"
+                                    android:background="@drawable/btn_clear"
+                                    android:contentDescription="번호 지우기"
+                                    android:padding="13dp"
+                                    android:scaleType="fitCenter"
+                                    android:src="@drawable/ic_clear_circle"
+                                    android:visibility="gone" />
+                            </FrameLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- 내용 -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:orientation="horizontal">
+                        <ImageView style="@style/IconCircle" android:layout_width="52dp" android:layout_height="52dp" android:src="@drawable/ic_chat" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+                            <TextView style="@style/Label" android:labelFor="@+id/etBody" android:text="내용" />
+                            <EditText
+                                android:id="@+id/etBody"
+                                style="@style/Field"
+                                android:gravity="top|start"
+                                android:hint="메시지를 입력하세요…"
+                                android:inputType="textMultiLine|textCapSentences"
+                                android:maxLength="500"
+                                android:minLines="4"
+                                android:textSize="17sp" />
+                            <TextView
+                                android:id="@+id/tvCount"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="6dp"
+                                android:gravity="end"
+                                android:textColor="@color/primary"
+                                android:textSize="15sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btnSendSms"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginTop="18dp"
+                        android:background="@drawable/btn_primary"
+                        android:clickable="true"
+                        android:elevation="4dp"
+                        android:focusable="true"
+                        android:gravity="center"
+                        android:outlineSpotShadowColor="@color/primary">
+                        <ImageView
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:importantForAccessibility="no"
+                            android:src="@drawable/ic_send"
+                            android:tint="@color/white" />
+                        <TextView
+                            android:id="@+id/tvSendSms"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:text="보내기"
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
                 </LinearLayout>
-                <TextView style="@style/Body" android:padding="4dp"
-                    android:text="문자는 선택한 폰에서 그 폰의 번호로 발신되고, 결과는 알림으로 돌아옵니다. 그 폰에서 ‘받는 폰에서 문자 발신 허용’이 켜져 있어야 합니다. 긴 문자(한글 약 70자 초과)는 통신사에 따라 전송되지 않을 수 있습니다." />
+
+                <LinearLayout style="@style/InfoCard">
+                    <ImageView style="@style/InfoIcon" />
+                    <TextView android:id="@+id/tvComposeInfo" style="@style/InfoText" />
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
 
-        <!-- 5. 전달할 앱 고르기 -->
-        <LinearLayout android:id="@+id/screenApps" android:layout_width="match_parent"
-            android:layout_height="match_parent" android:orientation="vertical" android:visibility="gone">
-            <Switch android:id="@+id/swAll" android:layout_width="match_parent" android:layout_height="wrap_content"
-                android:minHeight="60dp" android:paddingHorizontal="16dp" android:background="@color/card"
-                android:text="모든 앱의 알림 전달" android:textSize="16sp" android:textColor="@color/text" />
-            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" />
-            <TextView android:id="@+id/tvAppsHint" style="@style/Body" android:padding="16dp"
-                android:text="알림을 전달할 앱을 고르세요. 뒤로가기를 누르면 저장됩니다." />
-            <ListView android:id="@+id/lvApps" android:layout_width="match_parent" android:layout_height="0dp"
-                android:layout_weight="1" android:background="@color/card"
-                android:divider="@color/line" android:dividerHeight="1dp" />
+        <!-- 6. 전달할 앱 고르기 -->
+        <LinearLayout
+            android:id="@+id/screenApps"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                style="@style/Card"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="12dp"
+                android:paddingVertical="8dp">
+                <Switch
+                    android:id="@+id/swAll"
+                    style="@style/SwitchRow"
+                    android:layout_marginTop="0dp"
+                    android:text="모든 앱의 알림 전달"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/Card"
+                android:layout_height="0dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:layout_weight="1"
+                android:padding="0dp">
+                <TextView
+                    android:id="@+id/tvAppsHint"
+                    style="@style/Body"
+                    android:paddingHorizontal="18dp"
+                    android:paddingTop="16dp"
+                    android:paddingBottom="8dp"
+                    android:text="알림을 전달할 앱을 고르세요. 뒤로 가면 저장됩니다." />
+                <ListView
+                    android:id="@+id/lvApps"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:divider="@null"
+                    android:listSelector="@android:color/transparent"
+                    android:paddingBottom="8dp"
+                    android:clipToPadding="false" />
+            </LinearLayout>
         </LinearLayout>
     </FrameLayout>
 </LinearLayout>

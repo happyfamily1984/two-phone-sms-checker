@@ -1,0 +1,22 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape><gradient android:angle="0" android:startColor="@color/headerStart" android:endColor="@color/headerEnd" /></shape>
+    </item>
+    <!-- 은은한 동그라미 장식 -->
+    <item android:width="220dp" android:height="220dp" android:left="-90dp" android:top="-70dp" android:gravity="top|start">
+        <shape android:shape="oval"><solid android:color="#14FFFFFF" /></shape>
+    </item>
+    <item android:width="200dp" android:height="200dp" android:right="-60dp" android:bottom="-20dp" android:gravity="bottom|end">
+        <shape android:shape="oval"><solid android:color="#18FFFFFF" /></shape>
+    </item>
+    <item android:width="150dp" android:height="150dp" android:right="110dp" android:bottom="-70dp" android:gravity="bottom|end">
+        <shape android:shape="oval"><solid android:color="#12FFFFFF" /></shape>
+    </item>
+    <!-- 아래쪽은 바탕색으로 부드럽게 이어진다 -->
+    <item>
+        <shape>
+            <gradient android:angle="270" android:type="linear" android:startColor="#00F5F4FC"
+                android:centerColor="#00F5F4FC" android:centerY="0.55" android:endColor="@color/bg" />
+        </shape>
+    </item>
+</layer-list>

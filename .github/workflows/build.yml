@@ -12,8 +12,8 @@ jobs:
           distribution: temurin
           java-version: 17
       - uses: gradle/actions/setup-gradle@v4
-      - run: ./gradlew --no-daemon testReleaseUnitTest assembleRelease
+      - run: ./gradlew --no-daemon testReleaseUnitTest assembleSideload
       - uses: actions/upload-artifact@v4
         with:
           name: two-phone-sms-checker-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: app/build/outputs/apk/sideload/*.apk

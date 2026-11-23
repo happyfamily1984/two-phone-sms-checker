@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="150dp" android:height="130dp" android:viewportWidth="150" android:viewportHeight="130">
+    <!-- 점선 궤적 -->
+    <path android:strokeColor="#CCFFFFFF" android:strokeWidth="2.5" android:strokeLineCap="round"
+        android:pathData="M38,96 C55,122 98,124 118,104" android:fillColor="#00000000" />
+    <path android:fillColor="#00000000" android:strokeColor="#CCFFFFFF" android:strokeWidth="2.5"
+        android:strokeLineCap="round" android:pathData="M124,96 C132,84 134,70 130,56" />
+    <!-- 종이비행기 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M18,58 L128,14 L72,78 Z" />
+    <path android:fillColor="#DCD6FF" android:pathData="M72,78 L128,14 L100,96 Z" />
+    <path android:fillColor="#B9AEFA" android:pathData="M72,78 L66,104 L82,84 Z" />
+    <path android:fillColor="#EDEAFF" android:pathData="M18,58 L72,78 L66,104 L58,74 Z" />
+    <!-- 반짝임 -->
+    <path android:fillColor="#FFD54A" android:pathData="M120,8 L128,4 L138,22 L131,26 Z" />
+    <path android:fillColor="#FFD54A" android:pathData="M134,32 L146,28 L148,36 L136,40 Z" />
+</vector>

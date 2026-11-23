@@ -65,7 +65,7 @@ class ReceiverService : Service() {
                     onOpen = {
                         conn = it
                         backoff = 2000L
-                        setState(true, if (sender) "문자 발신 요청을 기다리는 중" else "다른 폰의 알림을 기다리는 중")
+                        setState(true, if (sender) "문자 발신 요청을 기다리는 중" else "알림을 기다리는 중")
                     },
                     onMessage = { id, body ->
                         if (sender) SmsSender.handle(this, key, body) else handle(key, id, body)
@@ -92,6 +92,7 @@ class ReceiverService : Service() {
             .filter { it.isNotEmpty() }.joinToString(" · ")).filter { it.isNotEmpty() }.joinToString(" ")
         val n = Notification.Builder(this, CH_MESSAGES)
             .setSmallIcon(R.drawable.ic_stat)
+            .setColor(getColor(R.color.primary))
             .setContentTitle(title.ifEmpty { "본래폰 알림" })
             .setContentText(msg.text)
             .setStyle(Notification.BigTextStyle().bigText(msg.text))
@@ -114,6 +115,7 @@ class ReceiverService : Service() {
     private fun statusNotification(text: String): Notification =
         Notification.Builder(this, CH_STATUS)
             .setSmallIcon(R.drawable.ic_stat)
+            .setColor(getColor(R.color.primary))
             .setContentTitle("투폰문자체커")
             .setContentText(text)
             .setOngoing(true)
