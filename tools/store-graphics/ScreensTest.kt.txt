@@ -1,0 +1,191 @@
+package com.happyfamily.twophone
+
+import android.content.res.ColorStateList
+import android.graphics.Typeface
+import android.text.SpannableStringBuilder
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.BaseAdapter
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.ListView
+import android.widget.Switch
+import android.widget.TextView
+import app.cash.paparazzi.DeviceConfig
+import app.cash.paparazzi.Paparazzi
+import android.widget.FrameLayout
+import org.junit.Rule
+import org.junit.Test
+
+class ScreensTest {
+    @get:Rule
+    val paparazzi = Paparazzi(
+        deviceConfig = DeviceConfig.PIXEL_6.copy(softButtons = false, screenHeight = 1200),
+        theme = "AppTheme",
+        showSystemUi = false,
+        maxPercentDifference = 100.0,
+    )
+
+    private data class Item(val title: String, val from: String, val text: String, val time: String, val icon: Int, val sel: Boolean = false)
+
+    private fun base(screen: Int, title: String, sub: String, back: Boolean, art: Int = R.drawable.header_phones): View {
+        val root = paparazzi.inflate<View>(R.layout.activity_main)
+        for (id in intArrayOf(R.id.screenChooser, R.id.screenCode, R.id.screenSender, R.id.screenReceiver, R.id.screenCompose, R.id.screenApps))
+            root.findViewById<View>(id).visibility = if (id == screen) View.VISIBLE else View.GONE
+        root.findViewById<TextView>(R.id.tvBar).text = title
+        root.findViewById<TextView>(R.id.tvSub).text = sub
+        root.findViewById<View>(R.id.btnBack).visibility = if (back) View.VISIBLE else View.GONE
+        root.findViewById<View>(R.id.titleBadge).visibility = if (back) View.GONE else View.VISIBLE
+        root.findViewById<ImageView>(R.id.ivHeaderArt).setImageResource(art)
+        if (!BuildConfig.SMS_SEND) {
+            root.findViewById<View>(R.id.cardSms).visibility = View.GONE
+            root.findViewById<View>(R.id.btnCompose).visibility = View.GONE
+        }
+        val h = root.findViewById<View>(R.id.headerText)
+        val d = root.resources.displayMetrics.density
+        h.setPadding(h.paddingLeft, h.paddingTop + (30 * d).toInt(), h.paddingRight, h.paddingBottom)
+        return root
+    }
+
+    private fun shoot(root: View, name: String) {
+        val frame = FrameLayout(root.context)
+        frame.addView(root, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 2400))
+        root.translationY = 0f
+        paparazzi.snapshot(frame, name + "_a")
+        root.translationY = -1200f
+        paparazzi.snapshot(frame, name + "_b")
+    }
+
+    private fun color(v: View, id: Int) = v.context.getColor(id)
+
+    @Test fun receiver() {
+        val root = base(R.id.screenReceiver, "투폰문자체커", "연결된 폰들의 알림을\n한 번에 확인하세요!", false)
+        val sb = SpannableStringBuilder("연결됨").apply {
+            setSpan(StyleSpan(Typeface.BOLD), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(ForegroundColorSpan(color(root, R.color.ok)), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            append(" – 알림을 기다리는 중")
+        }
+        root.findViewById<TextView>(R.id.tvConn).text = sb
+        root.findViewById<TextView>(R.id.tvCodeR).text = "연결 코드  ABCD-EFGH-JKLM-NPQR"
+        val items = listOf(
+            Item("엄마", "개인폰 · 카카오톡", "저녁 먹고 들어오니? 반찬 해 놨어", "방금", R.drawable.ic_chat),
+            Item("010-2345-6789", "개인폰 · 메시지", "내일 회의 10시로 변경되었습니다. 참고 부탁드려요.", "5분 전", R.drawable.ic_call),
+            Item("1588-0000", "개인폰 · 메시지", "[Web발신]\n[택배] 고객님의 상품이 오늘 14~16시 배송 예정입니다.", "32분 전", R.drawable.ic_call),
+            Item("연결 확인", "태블릿 · 테스트", "이 알림이 보이면 정상적으로 연결된 것입니다.", "1시간 전", R.drawable.ic_check),
+            Item("팀장님", "개인폰 · 카카오톡", "자료 확인했어요. 수고 많았습니다 👍", "2시간 전", R.drawable.ic_chat),
+        )
+        list(root, items, false)
+        shoot(root, "1_receiver")
+    }
+
+    @Test fun receiverSelect() {
+        val root = base(R.id.screenReceiver, "투폰문자체커", "연결된 폰들의 알림을\n한 번에 확인하세요!", false)
+        root.findViewById<TextView>(R.id.tvConn).text = "연결됨 – 알림을 기다리는 중"
+        root.findViewById<TextView>(R.id.tvCodeR).text = "연결 코드  ABCD-EFGH-JKLM-NPQR"
+        root.findViewById<View>(R.id.selBar).visibility = View.VISIBLE
+        root.findViewById<TextView>(R.id.tvSel).text = "2개 선택됨"
+        list(root, listOf(
+            Item("엄마", "개인폰 · 카카오톡", "저녁 먹고 들어오니?", "방금", R.drawable.ic_chat, true),
+            Item("010-2345-6789", "개인폰 · 메시지", "내일 회의 10시로 변경되었습니다.", "5분 전", R.drawable.ic_call),
+            Item("1588-0000", "개인폰 · 메시지", "[택배] 오늘 14~16시 배송 예정입니다.", "32분 전", R.drawable.ic_call, true),
+        ), true)
+        shoot(root, "7_select")
+    }
+
+    private fun list(root: View, items: List<Item>, selecting: Boolean) {
+        val lv = root.findViewById<ListView>(R.id.lvMsgs)
+        root.findViewById<View>(R.id.tvEmpty).visibility = View.GONE
+        lv.adapter = object : BaseAdapter() {
+            override fun getCount() = items.size
+            override fun getItem(p: Int) = items[p]
+            override fun getItemId(p: Int) = p.toLong()
+            override fun getView(p: Int, c: View?, parent: ViewGroup): View {
+                val r = LayoutInflater.from(parent.context).inflate(R.layout.item_msg, parent, false)
+                val m = items[p]
+                r.findViewById<TextView>(R.id.tvTitle).text = m.title
+                r.findViewById<TextView>(R.id.tvFrom).text = m.from
+                r.findViewById<TextView>(R.id.tvText).text = m.text
+                r.findViewById<TextView>(R.id.tvTime).text = m.time
+                r.findViewById<View>(R.id.card).setBackgroundResource(if (m.sel) R.drawable.card_selected else R.drawable.card_ripple)
+                r.findViewById<View>(R.id.kindCircle).setBackgroundResource(if (m.sel) R.drawable.circle_primary else R.drawable.icon_circle)
+                r.findViewById<ImageView>(R.id.ivKind).apply {
+                    setImageResource(if (m.sel) R.drawable.ic_check else m.icon)
+                    imageTintList = ColorStateList.valueOf(color(r, if (m.sel) R.color.white else R.color.primary))
+                }
+                r.findViewById<View>(R.id.ivChevron).visibility = if (selecting) View.INVISIBLE else View.VISIBLE
+                return r
+            }
+        }
+    }
+
+    @Test fun empty() {
+        val root = base(R.id.screenReceiver, "투폰문자체커", "연결된 폰들의 알림을\n한 번에 확인하세요!", false)
+        root.findViewById<TextView>(R.id.tvConn).text = "연결 안 됨 – 다시 연결하는 중…"
+        root.findViewById<View>(R.id.connBadge).setBackgroundResource(R.drawable.circle_warn)
+        root.findViewById<ImageView>(R.id.ivConnBadge).setImageResource(R.drawable.ic_warning)
+        root.findViewById<TextView>(R.id.tvCodeR).text = "연결 코드  ABCD-EFGH-JKLM-NPQR"
+        root.findViewById<View>(R.id.cardPermR).visibility = View.VISIBLE
+        root.findViewById<TextView>(R.id.tvPermR).text = "화면이 꺼져도 바로 받으려면 배터리 사용 제한을 풀어 주세요."
+        shoot(root, "8_empty")
+    }
+
+    @Test fun compose() {
+        val root = base(R.id.screenCompose, "문자 보내기", "어느 폰의 번호로 보낼까요?", true, R.drawable.header_plane)
+        root.findViewById<TextView>(R.id.tvPickDevice).text = "개인폰"
+        root.findViewById<EditText>(R.id.etTo).setText("010-2345-6789")
+        root.findViewById<View>(R.id.btnClearTo).visibility = View.VISIBLE
+        root.findViewById<EditText>(R.id.etBody).setText("네, 10시 회의 확인했습니다. 감사합니다!")
+        root.findViewById<TextView>(R.id.tvCount).text = "22자"
+        val sb = SpannableStringBuilder()
+        fun strong(s: String) { val st = sb.length; sb.append(s)
+            sb.setSpan(ForegroundColorSpan(color(root, R.color.primary)), st, sb.length, 0)
+            sb.setSpan(StyleSpan(Typeface.BOLD), st, sb.length, 0) }
+        sb.append("문자는 선택한 폰에서 그 폰의 번호로 발신되고, 결과는 알림으로 돌아옵니다. 그 폰에서 ")
+        strong("‘받는 폰에서 문자 발신 허용’"); sb.append("이 켜져 있어야 합니다. 긴 문자(")
+        strong("한글 약 70자 초과"); sb.append(")는 통신사에 따라 전송되지 않을 수 있습니다.")
+        root.findViewById<TextView>(R.id.tvComposeInfo).text = sb
+        shoot(root, "2_compose")
+    }
+
+    @Test fun sender() {
+        val root = base(R.id.screenSender, "투폰문자체커", "이 폰의 알림을\n다른 폰으로 보내고 있어요", false)
+        root.findViewById<TextView>(R.id.tvSenderState).apply { text = "동작 중 — 알림을 보내고 있어요"; setTextColor(color(root, R.color.ok)) }
+        root.findViewById<TextView>(R.id.tvStats).text = "보낸 알림 128건 · 마지막 3분 전"
+        root.findViewById<Switch>(R.id.swForward).isChecked = true
+        root.findViewById<TextView>(R.id.tvCodeS).text = "ABCD-EFGH-JKLM-NPQR"
+        root.findViewById<View>(R.id.cardPerms).visibility = View.GONE
+        root.findViewById<Switch>(R.id.swSms).isChecked = true
+        root.findViewById<TextView>(R.id.tvSmsState).apply { text = "✓ 문자 발신 요청을 기다리는 중"; setTextColor(color(root, R.color.ok)) }
+        root.findViewById<TextView>(R.id.tvRowApps).text = "전달할 앱 선택 (3개)"
+        root.findViewById<TextView>(R.id.tvRowName).text = "이 폰 이름: 개인폰"
+        shoot(root, "3_sender")
+    }
+
+    @Test fun senderPerms() {
+        val root = base(R.id.screenSender, "투폰문자체커", "이 폰의 알림을\n다른 폰으로 보내고 있어요", false)
+        root.findViewById<TextView>(R.id.tvSenderState).apply { text = "알림 접근 권한을 켜야 동작합니다"; setTextColor(color(root, R.color.warn)) }
+        root.findViewById<View>(R.id.senderBadge).setBackgroundResource(R.drawable.circle_warn)
+        root.findViewById<ImageView>(R.id.ivSenderBadge).setImageResource(R.drawable.ic_warning)
+        root.findViewById<TextView>(R.id.tvStats).text = "보낸 알림 0건"
+        root.findViewById<Switch>(R.id.swForward).isChecked = true
+        root.findViewById<TextView>(R.id.tvCodeS).text = "ABCD-EFGH-JKLM-NPQR"
+        root.findViewById<TextView>(R.id.tvAccess).text = "이 폰에 도착한 알림을 읽으려면 ‘알림 접근 권한’이 필요합니다."
+        root.findViewById<TextView>(R.id.tvBatteryS).text = "화면이 꺼져 있을 때도 바로 보내려면 배터리 사용 제한을 풀어 주세요."
+        root.findViewById<View>(R.id.tvSmsState).visibility = View.GONE
+        shoot(root, "6_sender_perms")
+    }
+
+    @Test fun chooser() {
+        val root = base(R.id.screenChooser, "투폰문자체커", "여러 폰의 알림을\n한 곳에서 확인하세요!", false)
+        shoot(root, "4_chooser")
+    }
+
+    @Test fun code() {
+        val root = base(R.id.screenCode, "받는 폰 연결", "연결 코드 하나로\n폰들을 안전하게 묶어요", true)
+        shoot(root, "5_code")
+    }
+}
